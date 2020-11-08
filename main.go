@@ -2,22 +2,22 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
-	"golang.org/x/sync/errgroup"
+	"github.com/math2001/gocmt/cmt"
 )
 
 func main() {
 	conf := loadConf()
 	checkResults := runChecks(conf)
-	var g errgroup.Group
+	var wg sync.WaitGroup
 	for checkResult := range checkResults {
-		g.Go(func() {
+		wg.Add(1)
+		go func(checkResult *cmt.CheckResult) {
+			defer wg.Done()
 			report(checkResult)
-		})
+		}(checkResult)
 	}
-	err := g.Wait()
-	if err != nil {
-		fmt.Printf("error(s) reporting: %s\n", err)
-	}
+	wg.Wait()
 	fmt.Println("CMT done")
 }
