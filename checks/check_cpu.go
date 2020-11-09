@@ -1,6 +1,7 @@
 package checks
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/math2001/gocmt/cmt"
@@ -14,6 +15,8 @@ func CheckCPU(cr *cmt.CheckResult, globals map[string]interface{}, settings map[
 		cr.AddError(errors.Wrap(err, "cpu.Percent"))
 		return
 	}
+
+	fmt.Fprintf(cr.DebugBuffer(), "some debugging thing")
 
 	cr.AddItem(&cmt.CheckItem{
 		Name:        "CPU",

@@ -6,11 +6,16 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"os"
+	"strings"
 	"sync"
 
 	"github.com/math2001/gocmt/cmt"
 )
+
+const STDOUT_REPORT_WIDTH = 48
 
 func sendReports(fs *cmt.FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
 	var stdoutlock sync.Mutex
@@ -39,18 +44,60 @@ func sendReport(fs *cmt.FrameworkSettings, checkresult *cmt.CheckResult) {
 }
 
 func writeReportHeaderToStdout(fs *cmt.FrameworkSettings) {
-	fmt.Println("======================================")
-	fmt.Printf("%s:%s (ran %d check(s))\n", fs.CmtGroup, fs.CmtNode, len(fs.Checks))
-	fmt.Println("======================================")
+	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
+	printCentered(fmt.Sprintf("%s:%s (ran %d check(s))", fs.CmtGroup, fs.CmtNode, len(fs.Checks)), STDOUT_REPORT_WIDTH-1, ' ')
+	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
 	fmt.Println()
 }
 
 func writeReportToStdout(checkresult *cmt.CheckResult) {
-	// log.Printf("TODO: pretty print\n%#v\n", checkresult)
+	printCentered(checkresult.Name(), STDOUT_REPORT_WIDTH, '-')
 
-	fmt.Printf("::: %s\n", checkresult.Name())
 	for _, checkitem := range checkresult.CheckItems() {
 		fmt.Printf("%-10s %v %s -- %s\n", checkitem.Name, checkitem.Value, checkitem.Unit, checkitem.Description)
+	}
+	fmt.Println()
+	if len(checkresult.Errors()) > 0 {
+		fmt.Println("Errors")
+		for _, err := range checkresult.Errors() {
+			fmt.Println(err)
+		}
+		fmt.Println()
+	}
+
+	if checkresult.DebugBuffer().Len() > 0 {
+		fmt.Println("Debug output:")
+
+		// write all the characters, except the last one, to check if it is a newline.
+		// if it isn't, then one is added automatically
+		io.CopyN(os.Stdout, checkresult.DebugBuffer(), int64(checkresult.DebugBuffer().Len()-1))
+
+		lastchar, err := checkresult.DebugBuffer().ReadByte()
+		if err == nil {
+			fmt.Printf("%c", lastchar)
+		} else if err != io.EOF {
+			fmt.Println()
+			fmt.Println("Internal error when reading debug buffer: ", err)
+			fmt.Println()
+		}
+
+		if lastchar != '\n' {
+			fmt.Println()
+		}
+
+		fmt.Println()
+	}
+
+}
+
+func printCentered(text string, width int, paddingChar rune) {
+	// -2 for the spaces
+	for i := 0; i < (width-len(text)-2)/2; i++ {
+		fmt.Printf("%c", paddingChar)
+	}
+	fmt.Printf(" %s ", text)
+	for i := 0; i < (width-len(text)-2)/2; i++ {
+		fmt.Printf("%c", paddingChar)
 	}
 	fmt.Println()
 }
