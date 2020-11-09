@@ -9,6 +9,8 @@ import (
 
 	"github.com/math2001/gocmt/checks"
 	"github.com/math2001/gocmt/cmt"
+	"github.com/mitchellh/mapstructure"
+	"github.com/pkg/errors"
 )
 
 // check name: check function
@@ -16,22 +18,19 @@ var allchecks = map[string]checkerfunction{
 	"cpu":      checks.CPU,
 	"boottime": checks.Boottime,
 	"load":     checks.Load,
+	"disks":    checks.Disks,
 }
 
 // This function returns before all the tests have finished running. It returns
 // a channel on which the check results are send. The channel is closed as soon
 // as all the tests have finished running.
-func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
+func runChecks(conf Config) <-chan *cmt.CheckResult {
 
 	var wg sync.WaitGroup
 
 	checkresults := make(chan *cmt.CheckResult)
 
 	// producer (produces check results)
-	var globals map[string]interface{}
-	if conf.CheckSettings["_globals"] != nil {
-		globals = conf.CheckSettings["_globals"].(map[string]interface{})
-	}
 
 	for name, fn := range allchecks {
 		if name == "_globals" {
@@ -42,32 +41,27 @@ func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
 			continue
 		}
 
-		// doesn't panic if name isn't a key (not like Python)
-		var subconf map[string]interface{}
-		if conf.CheckSettings[name] != nil {
-			subconf = conf.CheckSettings[name].(map[string]interface{})
+		value, ok := conf.ChecksArguments[name]
+		if ok {
+			sets, ok := value.([]interface{})
+			if !ok {
+				panic(fmt.Sprintf("%s: invalid argument sets. It should be a list, got %#v", name, value))
+			}
+
+			for _, set := range sets {
+				wg.Add(1)
+				var argSet map[string]interface{}
+				if err := mapstructure.Decode(set, &argSet); err != nil {
+					panic(errors.Wrapf(err, "decoding %#v into map[string]interface{}. You probably mess up check_arguments for %s", set, name))
+				}
+				go runCheck(&wg, name, fn, checkresults, argSet)
+			}
+
+		} else {
+			wg.Add(1)
+			go runCheck(&wg, name, fn, checkresults, nil)
 		}
 
-		// important, because fn and name are used in the goroutine below
-		fn := fn
-		name := name
-
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			defer func() {
-				if r := recover(); r != nil {
-					fmt.Fprintf(os.Stderr, "panic: %s\n", r)
-					debug.PrintStack()
-				}
-				// TODO: report panic properly
-				// checkresult.SetPanic(r, debug.Stack())
-			}()
-
-			checkresult := cmt.NewCheckResult(name)
-			fn(checkresult, globals, subconf)
-			checkresults <- checkresult
-		}()
 	}
 
 	go func() {
@@ -78,7 +72,7 @@ func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
 	return checkresults
 }
 
-func isCheckEnabled(fs *cmt.FrameworkSettings, name string) bool {
+func isCheckEnabled(fs *FrameworkSettings, name string) bool {
 	// TODO#perf: sort checks names and binary search
 	for _, n := range fs.Checks {
 		if n == name {
@@ -86,4 +80,26 @@ func isCheckEnabled(fs *cmt.FrameworkSettings, name string) bool {
 		}
 	}
 	return false
+}
+
+func runCheck(
+	wg *sync.WaitGroup,
+	name string,
+	fn checkerfunction,
+	checkresults chan<- *cmt.CheckResult,
+	argset map[string]interface{},
+) {
+	defer wg.Done()
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintf(os.Stderr, "panic: %s\n", r)
+			debug.PrintStack()
+		}
+		// TODO: report panic properly
+		// checkresult.SetPanic(r, debug.Stack())
+	}()
+
+	checkresult := cmt.NewCheckResult(name, argset)
+	fn(checkresult, argset)
+	checkresults <- checkresult
 }

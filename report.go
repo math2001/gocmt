@@ -16,7 +16,7 @@ import (
 
 const STDOUT_REPORT_WIDTH = 48
 
-func sendReports(fs *cmt.FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
+func sendReports(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
 	var stdoutlock sync.Mutex
 
 	writeReportHeaderToStdout(fs)
@@ -38,11 +38,11 @@ func sendReports(fs *cmt.FrameworkSettings, checkResults <-chan *cmt.CheckResult
 	wg.Wait()
 }
 
-func sendReport(fs *cmt.FrameworkSettings, checkresult *cmt.CheckResult) {
+func sendReport(fs *FrameworkSettings, checkresult *cmt.CheckResult) {
 	// log.Printf("TODO: send report")
 }
 
-func writeReportHeaderToStdout(fs *cmt.FrameworkSettings) {
+func writeReportHeaderToStdout(fs *FrameworkSettings) {
 	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
 	printCentered(fmt.Sprintf("%s:%s (ran %d check(s))", fs.CmtGroup, fs.CmtNode, len(fs.Checks)), STDOUT_REPORT_WIDTH-1, ' ')
 	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
@@ -51,13 +51,17 @@ func writeReportHeaderToStdout(fs *cmt.FrameworkSettings) {
 
 func writeReportToStdout(checkresult *cmt.CheckResult) {
 	printCentered(checkresult.Name(), STDOUT_REPORT_WIDTH, '-')
+	if checkresult.ArgumentSet() != nil {
+		fmt.Printf("argument set: %v\n", checkresult.ArgumentSet())
+	}
 
 	for _, checkitem := range checkresult.CheckItems() {
 		fmt.Printf("%-20s %v %s -> %s\n", checkitem.Name, checkitem.Value, checkitem.Unit, checkitem.Description)
 	}
 	fmt.Println()
+
 	if len(checkresult.Errors()) > 0 {
-		fmt.Println("Errors")
+		fmt.Println("Errors:")
 		for _, err := range checkresult.Errors() {
 			fmt.Println(err)
 		}

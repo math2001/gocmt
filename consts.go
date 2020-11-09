@@ -1,8 +1,8 @@
-package cmt
+package main
 
-type Conf struct {
+type Config struct {
 	FrameworkSettings *FrameworkSettings     `mapstructure:"framework_settings"`
-	CheckSettings     map[string]interface{} `mapstructure:"check_settings"`
+	ChecksArguments   map[string]interface{} `mapstructure:"checks_arguments"`
 }
 
 type FrameworkSettings struct {

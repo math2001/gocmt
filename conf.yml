@@ -6,5 +6,11 @@ framework_settings:
     - cpu
     - boottime
     - load
+    - disks
 
-checks_settings:
+checks_arguments:
+  disks:
+    - path: /
+      alert: 94
+    - path: /home
+      alert: 94

@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/math2001/gocmt/cmt"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v2"
 )
@@ -22,14 +21,14 @@ import (
 const confd_path = "./conf.d"
 const local_conf_path = "./conf.yml"
 
-func loadConf() cmt.Conf {
+func loadConf() Config {
 	base := make(map[string]interface{})
 	loadConfInPlaceFromConfd(base)
 	loadConfInPlaceFromFile(local_conf_path, base)
 	loadConfInPlaceFromRemote(base)
 	loadConfFromArguments(os.Args[1:])
 
-	var conf cmt.Conf
+	var conf Config
 	if err := mapstructure.Decode(base, &conf); err != nil {
 		// panic because that means we don't have any conf here
 		panic(err)

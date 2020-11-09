@@ -4,9 +4,9 @@
 
 ```go
 func Check(
-    cr *cmt.CheckResult,
+    cr      *cmt.CheckResult,
     globals map[string]interface{},
-    settings map[string]interface{},
+    args    map[string]interface{},
 )
 ```
 
@@ -51,15 +51,7 @@ integer_value, ok := globals["verbosity"].(int)
 
 ## Example
 
-```go
-func Example(
-    cr *cmt.CheckResult,
-    globals map[string]interface{},
-    settings map[string]interface{},
-) {
-    // TODO
-}
-```
+TODO. For now, have a look at the existing check, they should be quite readable.
 
 ## API
 

@@ -8,7 +8,10 @@ import (
 	"github.com/shirou/gopsutil/host"
 )
 
-func Boottime(cr *cmt.CheckResult, globals map[string]interface{}, settings map[string]interface{}) {
+func Boottime(
+	cr *cmt.CheckResult,
+	args map[string]interface{},
+) {
 	boottime, err := host.BootTime()
 	if err != nil {
 		cr.AddError(errors.Wrapf(err, "getting boottime"))

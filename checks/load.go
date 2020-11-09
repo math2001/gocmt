@@ -7,8 +7,7 @@ import (
 
 func Load(
 	cr *cmt.CheckResult,
-	globals map[string]interface{},
-	settings map[string]interface{},
+	args map[string]interface{},
 ) {
 	loadavg, err := load.Avg()
 	if err != nil {

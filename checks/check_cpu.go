@@ -11,8 +11,7 @@ import (
 
 func CPU(
 	cr *cmt.CheckResult,
-	globals map[string]interface{},
-	settings map[string]interface{},
+	args map[string]interface{},
 ) {
 
 	cpuPercent, err := cpu.Percent(2*time.Second, false)

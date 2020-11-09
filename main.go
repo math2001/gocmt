@@ -8,8 +8,7 @@ import (
 
 type checkerfunction func(
 	cr *cmt.CheckResult,
-	global_settings map[string]interface{},
-	check_settings map[string]interface{},
+	args map[string]interface{},
 )
 
 func main() {

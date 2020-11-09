@@ -48,14 +48,20 @@ framework_settings:
     checks:
         ...
 
+checks_multiple_arguments:
+    checka:
+        - set1: foo
+          bar: foar
+        ...
+
 checks_settings:
     _globals:
         ... # accessible by all checks
 
     checka:
-        ... # only accessible by checka
+        ... # only accessible by checka, overwrite globals
     checkb:
-        ... # only accessible by checkb
+        ... # only accessible by checkb, overwrite globals
 ```
 
 Note that there is nothing preventing the framework from exposing some of his
