@@ -19,6 +19,8 @@ type CheckResult struct {
 
 	isAlert      bool
 	alertMessage string
+
+	panicData *panicData
 }
 
 func (cr *CheckResult) AddError(err error) {
@@ -57,6 +59,23 @@ func (cr *CheckResult) SetAlert(msg string) {
 	cr.alertMessage = msg
 }
 
+func (cr *CheckResult) SetPanic(message interface{}, stack []byte) {
+	if cr.panicData != nil {
+		log.Printf("[checkresult] warning: panic already set %q (overwrote by %q)", cr.panicData.msg, message)
+	}
+	cr.panicData = &panicData{
+		msg:   message,
+		stack: stack,
+	}
+}
+
+func (cr *CheckResult) GetPanic() (r interface{}, stack []byte) {
+	if cr.panicData == nil {
+		return nil, nil
+	}
+	return cr.panicData.msg, cr.panicData.stack
+}
+
 func NewCheckResult(name string, argset map[string]interface{}) *CheckResult {
 	return &CheckResult{
 		name:   name,
@@ -69,4 +88,9 @@ type CheckItem struct {
 	Value       interface{}
 	Description string
 	Unit        string
+}
+
+type panicData struct {
+	msg   interface{} // whatever is passed to panic
+	stack []byte
 }

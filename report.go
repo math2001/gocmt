@@ -86,6 +86,12 @@ func writeReportToStdout(checkresult *cmt.CheckResult) {
 		fmt.Println()
 	}
 
+	if msg, stack := checkresult.GetPanic(); msg != nil || stack != nil {
+		fmt.Println("Panic:")
+		fmt.Println(msg)
+		fmt.Println(string(stack))
+	}
+
 }
 
 func printCentered(text string, width int, paddingChar rune) {

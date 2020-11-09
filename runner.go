@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"runtime/debug"
 	"sync"
 
@@ -19,6 +18,7 @@ var allchecks = map[string]checkerfunction{
 	"boottime": checks.Boottime,
 	"load":     checks.Load,
 	"disks":    checks.Disks,
+	"folders":  checks.Folders,
 }
 
 // This function returns before all the tests have finished running. It returns
@@ -90,16 +90,15 @@ func runCheck(
 	argset map[string]interface{},
 ) {
 	defer wg.Done()
+	checkresult := cmt.NewCheckResult(name, argset)
+
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Fprintf(os.Stderr, "panic: %s\n", r)
-			debug.PrintStack()
+			checkresult.SetPanic(r, debug.Stack())
 		}
-		// TODO: report panic properly
-		// checkresult.SetPanic(r, debug.Stack())
+		// send to the channel *after* we are done with object
+		checkresults <- checkresult
 	}()
 
-	checkresult := cmt.NewCheckResult(name, argset)
 	fn(checkresult, argset)
-	checkresults <- checkresult
 }
