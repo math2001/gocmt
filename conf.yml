@@ -1,0 +1,8 @@
+framework_settings:
+  probe_id: dev
+  probe_group: dev
+
+  checks:
+    - cpu
+
+checks_settings:

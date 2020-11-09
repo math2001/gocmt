@@ -14,25 +14,34 @@ import (
 	"path/filepath"
 	"sort"
 
+	"github.com/math2001/gocmt/cmt"
+	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v2"
 )
 
 const confd_path = "./conf.d"
 const local_conf_path = "./conf.yml"
 
-func loadConf() map[string]interface{} {
+func loadConf() cmt.Conf {
 	base := make(map[string]interface{})
 	loadConfInPlaceFromConfd(base)
 	loadConfInPlaceFromFile(local_conf_path, base)
 	loadConfInPlaceFromRemote(base)
 	loadConfFromArguments(os.Args[1:])
-	return base
+
+	var conf cmt.Conf
+	if err := mapstructure.Decode(base, &conf); err != nil {
+		// panic because that means we don't have any conf here
+		panic(err)
+	}
+
+	return conf
 }
 
 func loadConfInPlaceFromConfd(base map[string]interface{}) {
 	files, err := ioutil.ReadDir(confd_path)
 	if err != nil {
-		log.Printf("couldn't list directory conf.d, ignoring: %s", err)
+		log.Printf("[conf] couldn't list directory conf.d, ignoring: %s", err)
 	}
 
 	// sort alphabetically: NOT numerically aware
@@ -49,25 +58,25 @@ func loadConfInPlaceFromConfd(base map[string]interface{}) {
 func loadConfInPlaceFromFile(filename string, base map[string]interface{}) {
 	f, err := os.Open(filename)
 	if err != nil {
-		log.Printf("couldn't open %s conf file: %s\n", filename, err)
+		log.Printf("[conf] couldn't open %s conf file: %s\n", filename, err)
 		return
 	}
 	defer f.Close()
 
 	conf, err := readConf(f)
 	if err != nil {
-		log.Printf("couldn't read %s conf: %s\n", filename, err)
+		log.Printf("[conf] couldn't read %s conf: %s\n", filename, err)
 		return
 	}
 	mergeConfInBase(base, conf)
 }
 
 func loadConfInPlaceFromRemote(base map[string]interface{}) {
-	log.Println("TODO: load configuration from remote")
+	log.Println("[conf] TODO: load configuration from remote")
 }
 
 func loadConfFromArguments(args []string) {
-	log.Println("TODO: do something fancy like: dictionary.key.0=10 list.1 = 2")
+	log.Println("[conf] TODO: fancy config from argv: dictionary.key.0=10 list.1 = 2")
 }
 
 func readConf(r io.Reader) (map[string]interface{}, error) {

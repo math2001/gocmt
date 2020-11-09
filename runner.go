@@ -11,8 +11,10 @@ import (
 // This function returns before all the tests have finished running. It returns
 // a channel on which the check results are send. The channel is closed as soon
 // as all the tests have finished running.
-func runChecks(conf map[string]interface{}) <-chan *cmt.CheckResult {
-	c := make(map[string]func(map[string]interface{}, map[string]interface{}) *cmt.CheckResult)
+func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
+
+	c := make(map[string]checkerfunction)
+
 	c["cpu"] = checks.CheckCPU
 
 	var wg sync.WaitGroup
@@ -20,10 +22,23 @@ func runChecks(conf map[string]interface{}) <-chan *cmt.CheckResult {
 	checkresults := make(chan *cmt.CheckResult)
 
 	// producer (produces check results)
-	globals := conf["checks_settings"]["_globals"]
+	var globals map[string]interface{}
+	if conf.CheckSettings["_globals"] != nil {
+		globals = conf.CheckSettings["_globals"].(map[string]interface{})
+	}
+
 	for name, fn := range c {
+		if name == "_globals" {
+			panic("'_globals' is a reserved name (found check named _globals)")
+		}
 		// doesn't panic if name isn't a key (not like Python)
-		subconf := conf["check_settings"][name]
+		var subconf map[string]interface{}
+		if conf.CheckSettings[name] != nil {
+			subconf = conf.CheckSettings[name].(map[string]interface{})
+		}
+
+		// important, because fn is used in the goroutine below
+		fn := fn
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

@@ -2,22 +2,17 @@ package main
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/math2001/gocmt/cmt"
 )
 
+type checkerfunction func(map[string]interface{}, map[string]interface{}) *cmt.CheckResult
+
 func main() {
 	conf := loadConf()
+
 	checkResults := runChecks(conf)
-	var wg sync.WaitGroup
-	for checkResult := range checkResults {
-		wg.Add(1)
-		go func(checkResult *cmt.CheckResult) {
-			defer wg.Done()
-			report(checkResult)
-		}(checkResult)
-	}
-	wg.Wait()
+	sendReports(conf.FrameworkSettings, checkResults)
+
 	fmt.Println("CMT done")
 }
