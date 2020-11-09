@@ -17,23 +17,18 @@ import (
 const STDOUT_REPORT_WIDTH = 48
 
 func sendReports(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
-	var stdoutlock sync.Mutex
-
 	writeReportHeaderToStdout(fs)
 
 	var wg sync.WaitGroup
-	for checkResult := range checkResults {
+	for checkresult := range checkResults {
 		wg.Add(1)
+
 		go func(checkresult *cmt.CheckResult) {
 			defer wg.Done()
 			sendReport(fs, checkresult)
+		}(checkresult)
 
-			// make sure that two tests don't write to stdout at the same time
-			// (the output would be very messy)
-			stdoutlock.Lock()
-			writeReportToStdout(checkresult)
-			stdoutlock.Unlock()
-		}(checkResult)
+		writeReportToStdout(checkresult)
 	}
 	wg.Wait()
 }
@@ -44,7 +39,7 @@ func sendReport(fs *FrameworkSettings, checkresult *cmt.CheckResult) {
 
 func writeReportHeaderToStdout(fs *FrameworkSettings) {
 	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
-	printCentered(fmt.Sprintf("%s:%s (ran %d check(s))", fs.CmtGroup, fs.CmtNode, len(fs.Checks)), STDOUT_REPORT_WIDTH-1, ' ')
+	printCentered(fmt.Sprintf("%s:%s (ran %d checks)", fs.CmtGroup, fs.CmtNode, len(fs.Checks)), STDOUT_REPORT_WIDTH-1, ' ')
 	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
 	fmt.Println()
 }
