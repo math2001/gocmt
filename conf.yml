@@ -4,5 +4,6 @@ framework_settings:
 
   checks:
     - cpu
+    - boottime
 
 checks_settings:

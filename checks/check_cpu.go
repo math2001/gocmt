@@ -9,7 +9,12 @@ import (
 	"github.com/shirou/gopsutil/cpu"
 )
 
-func CheckCPU(cr *cmt.CheckResult, globals map[string]interface{}, settings map[string]interface{}) {
+func CPU(
+	cr *cmt.CheckResult,
+	globals map[string]interface{},
+	settings map[string]interface{},
+) {
+
 	cpuPercent, err := cpu.Percent(2*time.Second, false)
 	if err != nil {
 		cr.AddError(errors.Wrap(err, "cpu.Percent"))

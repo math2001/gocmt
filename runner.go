@@ -8,14 +8,16 @@ import (
 	"github.com/math2001/gocmt/cmt"
 )
 
+// check name: check function
+var allchecks = map[string]checkerfunction{
+	"cpu":      checks.CPU,
+	"boottime": checks.Boottime,
+}
+
 // This function returns before all the tests have finished running. It returns
 // a channel on which the check results are send. The channel is closed as soon
 // as all the tests have finished running.
 func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
-
-	c := make(map[string]checkerfunction)
-
-	c["cpu"] = checks.CheckCPU
 
 	var wg sync.WaitGroup
 
@@ -27,7 +29,7 @@ func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
 		globals = conf.CheckSettings["_globals"].(map[string]interface{})
 	}
 
-	for name, fn := range c {
+	for name, fn := range allchecks {
 		if name == "_globals" {
 			panic("'_globals' is a reserved name (found check named _globals)")
 		}
