@@ -2,6 +2,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"runtime/debug"
 	"sync"
 
 	"github.com/math2001/gocmt/checks"
@@ -12,6 +15,7 @@ import (
 var allchecks = map[string]checkerfunction{
 	"cpu":      checks.CPU,
 	"boottime": checks.Boottime,
+	"load":     checks.Load,
 }
 
 // This function returns before all the tests have finished running. It returns
@@ -51,6 +55,15 @@ func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			defer func() {
+				if r := recover(); r != nil {
+					fmt.Fprintf(os.Stderr, "panic: %s\n", r)
+					debug.PrintStack()
+				}
+				// TODO: report panic properly
+				// checkresult.SetPanic(r, debug.Stack())
+			}()
+
 			checkresult := cmt.NewCheckResult(name)
 			fn(checkresult, globals, subconf)
 			checkresults <- checkresult

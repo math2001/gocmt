@@ -24,7 +24,7 @@ func CPU(
 	fmt.Fprintf(cr.DebugBuffer(), "some debugging thing")
 
 	cr.AddItem(&cmt.CheckItem{
-		Name:        "CPU",
+		Name:        "cmt_cpu",
 		Value:       cpuPercent[0],
 		Description: "CPU Percentage",
 		Unit:        "%",

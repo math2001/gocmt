@@ -7,7 +7,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strings"
 	"sync"
@@ -40,7 +39,7 @@ func sendReports(fs *cmt.FrameworkSettings, checkResults <-chan *cmt.CheckResult
 }
 
 func sendReport(fs *cmt.FrameworkSettings, checkresult *cmt.CheckResult) {
-	log.Printf("TODO: send report")
+	// log.Printf("TODO: send report")
 }
 
 func writeReportHeaderToStdout(fs *cmt.FrameworkSettings) {
@@ -54,7 +53,7 @@ func writeReportToStdout(checkresult *cmt.CheckResult) {
 	printCentered(checkresult.Name(), STDOUT_REPORT_WIDTH, '-')
 
 	for _, checkitem := range checkresult.CheckItems() {
-		fmt.Printf("%-10s %v %s -- %s\n", checkitem.Name, checkitem.Value, checkitem.Unit, checkitem.Description)
+		fmt.Printf("%-20s %v %s -> %s\n", checkitem.Name, checkitem.Value, checkitem.Unit, checkitem.Description)
 	}
 	fmt.Println()
 	if len(checkresult.Errors()) > 0 {
