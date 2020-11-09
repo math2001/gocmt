@@ -34,7 +34,6 @@ func sendReports(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
 }
 
 func sendReport(fs *FrameworkSettings, checkresult *cmt.CheckResult) {
-	// log.Printf("TODO: send report")
 }
 
 func writeReportHeaderToStdout(fs *FrameworkSettings) {
