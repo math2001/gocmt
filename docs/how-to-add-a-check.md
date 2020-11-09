@@ -16,6 +16,8 @@ func CheckName(
 }
 ```
 
+See [how to write a check](./how-to-write-a-check.md) for CMT's API.
+
 ## 2. Add check to map of all checks
 
 The runner (in `runner.go`) needs to know about this new check. Just add it to the map `allchecks` (`checkname => check function`), like so:
@@ -29,7 +31,16 @@ var allchecks = map[string]checkerfunction{
 }
 ```
 
-## 3. Enable the check
+## 3. Build
+
+```bash
+$ go build
+```
+
+If you (and I) didn't make any mistake, it should remain quiet and build the
+binary.
+
+## 4. Enable the check
 
 Now the check just needs to be enabled in the configuration.
 
