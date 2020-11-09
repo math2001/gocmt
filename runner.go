@@ -32,6 +32,10 @@ func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
 			panic("'_globals' is a reserved name (found check named _globals)")
 		}
 
+		if !isCheckEnabled(conf.FrameworkSettings, name) {
+			continue
+		}
+
 		// doesn't panic if name isn't a key (not like Python)
 		var subconf map[string]interface{}
 		if conf.CheckSettings[name] != nil {
@@ -57,4 +61,14 @@ func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
 	}()
 
 	return checkresults
+}
+
+func isCheckEnabled(fs *cmt.FrameworkSettings, name string) bool {
+	// TODO#perf: sort checks names and binary search
+	for _, n := range fs.Checks {
+		if n == name {
+			return true
+		}
+	}
+	return false
 }
