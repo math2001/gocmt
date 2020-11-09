@@ -1,6 +1,6 @@
 framework_settings:
-  probe_id: dev
-  probe_group: dev
+  cmt_node: dev-001
+  cmt_group: dev
 
   checks:
     - cpu

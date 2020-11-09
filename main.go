@@ -6,7 +6,11 @@ import (
 	"github.com/math2001/gocmt/cmt"
 )
 
-type checkerfunction func(map[string]interface{}, map[string]interface{}) *cmt.CheckResult
+type checkerfunction func(
+	cr *cmt.CheckResult,
+	global_settings map[string]interface{},
+	check_settings map[string]interface{},
+)
 
 func main() {
 	conf := loadConf()

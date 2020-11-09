@@ -1,9 +1,13 @@
 package cmt
 
 type Conf struct {
-	FrameworkSettings map[string]interface{}
-	CheckSettings     map[string]interface{}
+	FrameworkSettings *FrameworkSettings     `mapstructure:"framework_settings"`
+	CheckSettings     map[string]interface{} `mapstructure:"check_settings"`
 }
 
-// type Globals struct {
-// }
+type FrameworkSettings struct {
+	CmtNode  string `mapstructure:"cmt_node"`
+	CmtGroup string `mapstructure:"cmt_group"`
+
+	Checks []string
+}

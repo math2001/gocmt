@@ -31,18 +31,23 @@ func runChecks(conf cmt.Conf) <-chan *cmt.CheckResult {
 		if name == "_globals" {
 			panic("'_globals' is a reserved name (found check named _globals)")
 		}
+
 		// doesn't panic if name isn't a key (not like Python)
 		var subconf map[string]interface{}
 		if conf.CheckSettings[name] != nil {
 			subconf = conf.CheckSettings[name].(map[string]interface{})
 		}
 
-		// important, because fn is used in the goroutine below
+		// important, because fn and name are used in the goroutine below
 		fn := fn
+		name := name
+
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			checkresults <- fn(globals, subconf)
+			checkresult := cmt.NewCheckResult(name)
+			fn(checkresult, globals, subconf)
+			checkresults <- checkresult
 		}()
 	}
 
