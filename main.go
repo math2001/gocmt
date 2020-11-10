@@ -15,7 +15,7 @@ func main() {
 	conf := loadConf()
 
 	checkResults := runChecks(conf)
-	sendReports(conf.FrameworkSettings, checkResults)
+	sendReport(conf.FrameworkSettings, checkResults)
 
 	fmt.Println("CMT done")
 }

@@ -49,5 +49,4 @@ func Disks(
 	if disk.UsedPercent > float64(alert_threshold) {
 		cr.SetAlert(fmt.Sprintf("check disk for %s - critical capacity alert (%.2f%%)", path, disk.UsedPercent))
 	}
-
 }

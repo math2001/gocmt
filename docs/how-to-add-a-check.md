@@ -9,8 +9,7 @@ package checks
 
 func CheckName(
     cr *cmt.CheckResult,
-    globals map[string]interface{},
-    settings map[string]interface{},
+    args map[string]interface{},
 ) {
     // code for the check goes here
 }

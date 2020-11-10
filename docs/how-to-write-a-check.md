@@ -5,7 +5,6 @@
 ```go
 func Check(
     cr      *cmt.CheckResult,
-    globals map[string]interface{},
     args    map[string]interface{},
 )
 ```
@@ -13,8 +12,7 @@ func Check(
 Arguments:
 
 1. `cr *cmt.CheckResult`: this is where the results are stored. You'll be calling `.AddItem`, `.AddError` and `.SaveToDatabase`. CMT will then manage everything based on this report.
-2. `globals map[string]interface{}`: the global settings which every check can access
-3. `settings map[string]interface{}`: the settings which *only this check* can access.
+3. `args map[string]interface{}`: the arguments for this check. Different argument set can be provided in the conf, 
 
 Return value: Nothing.
 

@@ -25,29 +25,33 @@ var httpclient = &http.Client{
 	Timeout: 100 * time.Second, // default timeout is 0, meaning no timeout, which is bad
 }
 
-func sendReports(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
+// consumes the reports from the check results channel (the check result are
+// send on this channel as soon as they are finished, and the channel is closed
+// once all the checks have finished)
+func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
 	writeReportHeaderToStdout(fs)
 
 	var g errgroup.Group
 	for checkresult := range checkResults {
 		checkresult := checkresult
 		g.Go(func() error {
-			return sendReport(fs, checkresult)
+			return sendCheckResult(fs, checkresult)
 		})
 
 		writeReportToStdout(checkresult)
 	}
+
 	if err := g.Wait(); err != nil {
 		fmt.Println(err)
 	}
 }
 
-func sendReport(fs *FrameworkSettings, cr *cmt.CheckResult) error {
+func sendCheckResult(fs *FrameworkSettings, cr *cmt.CheckResult) error {
 	var g errgroup.Group
 	for _, addr := range fs.GraylogHTTPGelfServers {
 		addr := addr
 		g.Go(func() error {
-			return sendReportHTTPGelf(cr, addr, fs.CmtGroup, fs.CmtNode)
+			return sendCheckResultHTTPGelf(cr, addr, fs.CmtGroup, fs.CmtNode)
 		})
 
 	}
@@ -55,21 +59,21 @@ func sendReport(fs *FrameworkSettings, cr *cmt.CheckResult) error {
 	for _, addr := range fs.GraylogUDPGelfServers {
 		addr := addr
 		g.Go(func() error {
-			return sendReportUDPGelf(cr, addr, fs.CmtGroup, fs.CmtNode)
+			return sendCheckResultUDPGelf(cr, addr, fs.CmtGroup, fs.CmtNode)
 		})
 	}
 
 	for _, addr := range fs.TeamsChannel {
 		addr := addr
 		g.Go(func() error {
-			return sendReportTeamsChannel(cr, addr, fs.CmtGroup, fs.CmtNode)
+			return sendCheckResultTeamsChannel(cr, addr, fs.CmtGroup, fs.CmtNode)
 		})
 	}
 
 	return errors.Wrapf(g.Wait(), "reporting check result %q", cr.Name())
 }
 
-func sendReportHTTPGelf(cr *cmt.CheckResult, addr *HTTPGelfAddress, group string, node string) error {
+func sendCheckResultHTTPGelf(cr *cmt.CheckResult, addr *HTTPGelfAddress, group string, node string) error {
 	var buf bytes.Buffer
 	payload := map[string]interface{}{
 		"version":       "1.1",
@@ -116,11 +120,11 @@ func sendReportHTTPGelf(cr *cmt.CheckResult, addr *HTTPGelfAddress, group string
 	return nil
 }
 
-func sendReportUDPGelf(cr *cmt.CheckResult, addr *UDPGelfAddress, group string, node string) error {
+func sendCheckResultUDPGelf(cr *cmt.CheckResult, addr *UDPGelfAddress, group string, node string) error {
 	return nil
 }
 
-func sendReportTeamsChannel(cr *cmt.CheckResult, addr *TeamsAddress, group string, node string) error {
+func sendCheckResultTeamsChannel(cr *cmt.CheckResult, addr *TeamsAddress, group string, node string) error {
 	return nil
 }
 
