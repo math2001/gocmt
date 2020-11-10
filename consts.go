@@ -25,8 +25,7 @@ type UDPGelfAddress struct {
 
 type HTTPGelfAddress struct {
 	Name string
-	Host string
-	Port int
+	URL  string
 }
 
 type TeamsAddress struct {

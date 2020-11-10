@@ -2,6 +2,10 @@ framework_settings:
   cmt_node: dev-001
   cmt_group: dev
 
+  graylog_http_gelf_servers:
+    - name: graylog_test
+      url: http://localhost:8001
+
   checks:
     - cpu
     - boottime

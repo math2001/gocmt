@@ -59,6 +59,10 @@ func (cr *CheckResult) SetAlert(msg string) {
 	cr.alertMessage = msg
 }
 
+func (cr *CheckResult) GetAlert() (is_alert bool, message string) {
+	return cr.isAlert, cr.alertMessage
+}
+
 func (cr *CheckResult) SetPanic(message interface{}, stack []byte) {
 	if cr.panicData != nil {
 		log.Printf("[checkresult] warning: panic already set %q (overwrote by %q)", cr.panicData.msg, message)
