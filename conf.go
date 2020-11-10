@@ -12,7 +12,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v2"
@@ -28,8 +30,39 @@ func loadConf() Config {
 	loadConfInPlaceFromRemote(base)
 	loadConfFromArguments(os.Args[1:])
 
+	var adapted = make(map[string]map[string]interface{})
+	adapted["framework_settings"] = make(map[string]interface{})
+	adapted["checks_arguments"] = make(map[string]interface{})
+
+	t := reflect.TypeOf(FrameworkSettings{})
+	frameworkSettingsKeyNames := make([]string, t.NumField())
+	for i := 0; i < len(frameworkSettingsKeyNames); i++ {
+		frameworkSettingsKeyNames[i] = t.Field(i).Tag.Get("mapstructure")
+		if frameworkSettingsKeyNames[i] == "" {
+			frameworkSettingsKeyNames[i] = strings.ToLower(t.Field(i).Name)
+		}
+	}
+
+	for key, value := range base {
+
+		isFrameworkKey := false
+		for _, k := range frameworkSettingsKeyNames {
+			if k == key {
+				isFrameworkKey = true
+				break
+			}
+		}
+
+		if isFrameworkKey {
+			adapted["framework_settings"][key] = value
+		} else {
+			adapted["checks_arguments"][key] = value
+		}
+
+	}
+
 	var conf Config
-	if err := mapstructure.Decode(base, &conf); err != nil {
+	if err := mapstructure.Decode(adapted, &conf); err != nil {
 		// panic because that means we don't have any conf here
 		panic(err)
 	}

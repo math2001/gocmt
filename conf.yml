@@ -1,21 +1,19 @@
-framework_settings:
-  cmt_node: dev-001
-  cmt_group: dev
+cmt_node: dev-001
+cmt_group: dev
 
-  graylog_http_gelf_servers:
-    - name: graylog_test
-      url: http://localhost:8001
+graylog_http_gelf_servers:
+  - name: graylog_test
+    url: http://localhost:8001
 
-  checks:
-    - cpu
-    - boottime
-    - load
-    - disks
-    - folders
+checks:
+  - cpu
+  - boottime
+  - load
+  - disks
+  - folders
 
-checks_arguments:
-  disks:
-    - path: /
-      alert: 94
-    - path: /home
-      alert: 94
+disks:
+  - path: /
+    alert: 94
+  - path: /home
+    alert: 94
