@@ -14,6 +14,7 @@ type Check struct {
 
 	errors     []error
 	checkitems []*CheckItem
+	DB         map[string]interface{}
 
 	debugbuf bytes.Buffer
 
@@ -80,10 +81,11 @@ func (c *Check) GetPanic() (r interface{}, stack []byte) {
 	return c.panicData.msg, c.panicData.stack
 }
 
-func NewCheckResult(name string, argset map[string]interface{}) *Check {
+func NewCheck(name string, argset map[string]interface{}, db map[string]interface{}) *Check {
 	return &Check{
 		name:   name,
 		argset: argset,
+		DB:     db,
 	}
 }
 

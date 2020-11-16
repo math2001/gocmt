@@ -1,6 +1,8 @@
 cmt_node: dev-001
 cmt_group: dev
 
+database_file: ./db.json
+
 graylog_http_gelf_servers:
   - name: graylog_test
     url: http://localhost:8001
@@ -11,6 +13,7 @@ checks:
   - load
   - disks
   - folders
+  - network_counters
 
 disks:
   - path: /

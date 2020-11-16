@@ -15,6 +15,8 @@ type FrameworkSettings struct {
 
 	TeamsChannel   []*TeamsAddress `mapstructure:"teams_channel"`
 	TeamsRateLimit int             `mapstructure:"teams_rate_limit"`
+
+	DatabaseFile string `mapstructure:"database_file"`
 }
 
 type UDPGelfAddress struct {
