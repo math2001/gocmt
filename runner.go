@@ -26,6 +26,7 @@ var allchecks = map[string]checkerfunction{
 	"memory":           checks.Memory,
 	"process":          checks.Process,
 	"swap":             checks.Swap,
+	"mounts":           checks.Mounts,
 }
 
 // This function returns before all the tests have finished running. It returns

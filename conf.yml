@@ -17,6 +17,7 @@ checks:
   - memory
   - process
   - swap
+  - mounts
 
 disks:
   - path: /
@@ -27,3 +28,6 @@ disks:
 process:
   - name: system and service manager
     psname: systemd
+
+mounts:
+  - mountpoint: /home
