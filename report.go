@@ -47,6 +47,12 @@ func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.Check) {
 }
 
 func sendCheckResult(fs *FrameworkSettings, c *cmt.Check) error {
+
+	// don't send update if there are no check items
+	if len(c.CheckItems()) == 0 {
+		return nil
+	}
+
 	var g errgroup.Group
 	for _, addr := range fs.GraylogHTTPGelfServers {
 		addr := addr
