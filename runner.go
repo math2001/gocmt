@@ -24,6 +24,7 @@ var allchecks = map[string]checkerfunction{
 	"folders":          checks.Folders,
 	"network_counters": checks.NetworkCounters,
 	"memory":           checks.Memory,
+	"process":          checks.Process,
 }
 
 // This function returns before all the tests have finished running. It returns

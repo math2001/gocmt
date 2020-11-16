@@ -8,16 +8,21 @@ graylog_http_gelf_servers:
     url: http://localhost:8001
 
 checks:
-  - cpu
+  # - cpu
   - boottime
   - load
   - disks
   - folders
   - network_counters
   - memory
+  - process
 
 disks:
   - path: /
     alert: 94
   - path: /home
     alert: 94
+
+process:
+  - name: system and service manager
+    psname: systemd

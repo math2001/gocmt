@@ -1,8 +1,6 @@
 package checks
 
 import (
-	"fmt"
-
 	"github.com/math2001/gocmt/cmt"
 	"github.com/shirou/gopsutil/net"
 )
@@ -37,5 +35,4 @@ func NetworkCounters(
 		})
 	}
 	c.DB["prev_bytes_recv"] = statsSum.BytesRecv
-	fmt.Println(c.DB)
 }
