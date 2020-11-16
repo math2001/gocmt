@@ -18,6 +18,7 @@ checks:
   - process
   - swap
   - mounts
+  - pings
 
 disks:
   - path: /
@@ -31,3 +32,7 @@ process:
 
 mounts:
   - mountpoint: /home
+
+pings:
+  - hostname: localhost
+  - hostname: invalid
