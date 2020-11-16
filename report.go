@@ -88,8 +88,8 @@ func sendCheckResultHTTPGelf(c *cmt.Check, addr *HTTPGelfAddress, group string, 
 		payload[fmt.Sprintf("cmt_%s", ci.Name)] = ci.Value
 	}
 
-	is_alert, _ := c.GetAlert()
-	if is_alert {
+	isAlert, _ := c.GetAlert()
+	if isAlert {
 		payload["cmt_alert"] = "yes"
 	} else {
 		payload["cmt_alert"] = "no"

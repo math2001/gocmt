@@ -12,7 +12,7 @@ func Disks(
 	args map[string]interface{},
 ) {
 	path := args["path"].(string)
-	alert_threshold := args["alert"].(int)
+	alertThreshold := args["alert"].(int)
 
 	disk, err := disk.Usage(path)
 	if err != nil {
@@ -46,7 +46,7 @@ func Disks(
 		Description: "Used (percent)",
 	})
 
-	if disk.UsedPercent > float64(alert_threshold) {
+	if disk.UsedPercent > float64(alertThreshold) {
 		c.SetAlert(fmt.Sprintf("check disk for %s - critical capacity alert (%.2f%%)", path, disk.UsedPercent))
 	}
 }
