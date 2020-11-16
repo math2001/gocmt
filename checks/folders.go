@@ -5,7 +5,7 @@ import (
 )
 
 func Folders(
-	cr *cmt.CheckResult,
+	c *cmt.Check,
 	args map[string]interface{},
 ) {
 	panic("not implemented")

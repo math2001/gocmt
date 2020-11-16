@@ -5,10 +5,10 @@ import (
 	"log"
 )
 
-// CheckResult is basically a getter setter class. I don't think it's the
+// Check is basically a getter setter class. I don't think it's the
 // typical go way, but it makes writing checks easier to read (AddError and
 // AddItem), and that's what matters here.
-type CheckResult struct {
+type Check struct {
 	name   string
 	argset map[string]interface{}
 
@@ -23,65 +23,65 @@ type CheckResult struct {
 	panicData *panicData
 }
 
-func (cr *CheckResult) AddError(err error) {
-	cr.errors = append(cr.errors, err)
+func (c *Check) AddError(err error) {
+	c.errors = append(c.errors, err)
 }
 
-func (cr *CheckResult) AddItem(ci *CheckItem) {
-	cr.checkitems = append(cr.checkitems, ci)
+func (c *Check) AddItem(ci *CheckItem) {
+	c.checkitems = append(c.checkitems, ci)
 }
 
-func (cr *CheckResult) Errors() []error {
-	return cr.errors
+func (c *Check) Errors() []error {
+	return c.errors
 }
 
-func (cr *CheckResult) CheckItems() []*CheckItem {
-	return cr.checkitems
+func (c *Check) CheckItems() []*CheckItem {
+	return c.checkitems
 }
 
-func (cr *CheckResult) Name() string {
-	return cr.name
+func (c *Check) Name() string {
+	return c.name
 }
 
-func (cr *CheckResult) ArgumentSet() map[string]interface{} {
-	return cr.argset
+func (c *Check) ArgumentSet() map[string]interface{} {
+	return c.argset
 }
 
-func (cr *CheckResult) DebugBuffer() *bytes.Buffer {
-	return &cr.debugbuf
+func (c *Check) DebugBuffer() *bytes.Buffer {
+	return &c.debugbuf
 }
 
-func (cr *CheckResult) SetAlert(msg string) {
-	if cr.isAlert {
-		log.Printf("[checkresult] warning: alert already set to %q (overwrote by %q)", cr.alertMessage, msg)
+func (c *Check) SetAlert(msg string) {
+	if c.isAlert {
+		log.Printf("[checkresult] warning: alert already set to %q (overwrote by %q)", c.alertMessage, msg)
 	}
-	cr.isAlert = true
-	cr.alertMessage = msg
+	c.isAlert = true
+	c.alertMessage = msg
 }
 
-func (cr *CheckResult) GetAlert() (is_alert bool, message string) {
-	return cr.isAlert, cr.alertMessage
+func (c *Check) GetAlert() (is_alert bool, message string) {
+	return c.isAlert, c.alertMessage
 }
 
-func (cr *CheckResult) SetPanic(message interface{}, stack []byte) {
-	if cr.panicData != nil {
-		log.Printf("[checkresult] warning: panic already set %q (overwrote by %q)", cr.panicData.msg, message)
+func (c *Check) SetPanic(message interface{}, stack []byte) {
+	if c.panicData != nil {
+		log.Printf("[checkresult] warning: panic already set %q (overwrote by %q)", c.panicData.msg, message)
 	}
-	cr.panicData = &panicData{
+	c.panicData = &panicData{
 		msg:   message,
 		stack: stack,
 	}
 }
 
-func (cr *CheckResult) GetPanic() (r interface{}, stack []byte) {
-	if cr.panicData == nil {
+func (c *Check) GetPanic() (r interface{}, stack []byte) {
+	if c.panicData == nil {
 		return nil, nil
 	}
-	return cr.panicData.msg, cr.panicData.stack
+	return c.panicData.msg, c.panicData.stack
 }
 
-func NewCheckResult(name string, argset map[string]interface{}) *CheckResult {
-	return &CheckResult{
+func NewCheckResult(name string, argset map[string]interface{}) *Check {
+	return &Check{
 		name:   name,
 		argset: argset,
 	}

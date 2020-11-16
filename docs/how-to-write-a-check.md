@@ -4,14 +4,14 @@
 
 ```go
 func Check(
-    cr      *cmt.CheckResult,
+    c       *cmt.CheckResult,
     args    map[string]interface{},
 )
 ```
 
 Arguments:
 
-1. `cr *cmt.CheckResult`: this is where the results are stored. You'll be calling `.AddItem`, `.AddError` and `.SaveToDatabase`. CMT will then manage everything based on this report.
+1. `c *cmt.CheckResult`: this is where the results are stored. You'll be calling `.AddItem`, `.AddError` and `.SaveToDatabase`. CMT will then manage everything based on this report.
 3. `args map[string]interface{}`: the arguments for this check. Different argument set can be provided in the conf, 
 
 Return value: Nothing.

@@ -24,11 +24,11 @@ var allchecks = map[string]checkerfunction{
 // This function returns before all the tests have finished running. It returns
 // a channel on which the check results are send. The channel is closed as soon
 // as all the tests have finished running.
-func runChecks(conf Config) <-chan *cmt.CheckResult {
+func runChecks(conf Config) <-chan *cmt.Check {
 
 	var wg sync.WaitGroup
 
-	checkresults := make(chan *cmt.CheckResult)
+	checkresults := make(chan *cmt.Check)
 
 	// producer (produces check results)
 
@@ -86,7 +86,7 @@ func runCheck(
 	wg *sync.WaitGroup,
 	name string,
 	fn checkerfunction,
-	checkresults chan<- *cmt.CheckResult,
+	checkresults chan<- *cmt.Check,
 	argset map[string]interface{},
 ) {
 	defer wg.Done()

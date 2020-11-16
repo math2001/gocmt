@@ -8,7 +8,7 @@ import (
 )
 
 func Disks(
-	cr *cmt.CheckResult,
+	c *cmt.Check,
 	args map[string]interface{},
 ) {
 	path := args["path"].(string)
@@ -16,30 +16,30 @@ func Disks(
 
 	disk, err := disk.Usage(path)
 	if err != nil {
-		cr.AddError(err)
+		c.AddError(err)
 	}
 
-	cr.AddItem(&cmt.CheckItem{
+	c.AddItem(&cmt.CheckItem{
 		Name:        "disk",
 		Value:       path,
 		Description: "Path",
 	})
 
-	cr.AddItem(&cmt.CheckItem{
+	c.AddItem(&cmt.CheckItem{
 		Name:        "disk_total",
 		Value:       disk.Total,
 		Unit:        "bytes",
 		Description: "Total (bytes)",
 	})
 
-	cr.AddItem(&cmt.CheckItem{
+	c.AddItem(&cmt.CheckItem{
 		Name:        "disk_free",
 		Value:       disk.Free,
 		Unit:        "bytes",
 		Description: "Free (bytes)",
 	})
 
-	cr.AddItem(&cmt.CheckItem{
+	c.AddItem(&cmt.CheckItem{
 		Name:        "disk_percent",
 		Value:       disk.UsedPercent,
 		Unit:        "%",
@@ -47,6 +47,6 @@ func Disks(
 	})
 
 	if disk.UsedPercent > float64(alert_threshold) {
-		cr.SetAlert(fmt.Sprintf("check disk for %s - critical capacity alert (%.2f%%)", path, disk.UsedPercent))
+		c.SetAlert(fmt.Sprintf("check disk for %s - critical capacity alert (%.2f%%)", path, disk.UsedPercent))
 	}
 }

@@ -8,7 +8,7 @@ Add a `testname.go` in the `checks` folder. The filename doesn't matter, only th
 package checks
 
 func CheckName(
-    cr *cmt.CheckResult,
+    c *cmt.CheckResult,
     args map[string]interface{},
 ) {
     // code for the check goes here

@@ -28,7 +28,7 @@ var httpclient = &http.Client{
 // consumes the reports from the check results channel (the check result are
 // send on this channel as soon as they are finished, and the channel is closed
 // once all the checks have finished)
-func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
+func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.Check) {
 	writeReportHeaderToStdout(fs)
 
 	var g errgroup.Group
@@ -46,12 +46,12 @@ func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
 	}
 }
 
-func sendCheckResult(fs *FrameworkSettings, cr *cmt.CheckResult) error {
+func sendCheckResult(fs *FrameworkSettings, c *cmt.Check) error {
 	var g errgroup.Group
 	for _, addr := range fs.GraylogHTTPGelfServers {
 		addr := addr
 		g.Go(func() error {
-			return sendCheckResultHTTPGelf(cr, addr, fs.CmtGroup, fs.CmtNode)
+			return sendCheckResultHTTPGelf(c, addr, fs.CmtGroup, fs.CmtNode)
 		})
 
 	}
@@ -59,36 +59,36 @@ func sendCheckResult(fs *FrameworkSettings, cr *cmt.CheckResult) error {
 	for _, addr := range fs.GraylogUDPGelfServers {
 		addr := addr
 		g.Go(func() error {
-			return sendCheckResultUDPGelf(cr, addr, fs.CmtGroup, fs.CmtNode)
+			return sendCheckResultUDPGelf(c, addr, fs.CmtGroup, fs.CmtNode)
 		})
 	}
 
 	for _, addr := range fs.TeamsChannel {
 		addr := addr
 		g.Go(func() error {
-			return sendCheckResultTeamsChannel(cr, addr, fs.CmtGroup, fs.CmtNode)
+			return sendCheckResultTeamsChannel(c, addr, fs.CmtGroup, fs.CmtNode)
 		})
 	}
 
-	return errors.Wrapf(g.Wait(), "reporting check result %q", cr.Name())
+	return errors.Wrapf(g.Wait(), "reporting check result %q", c.Name())
 }
 
-func sendCheckResultHTTPGelf(cr *cmt.CheckResult, addr *HTTPGelfAddress, group string, node string) error {
+func sendCheckResultHTTPGelf(c *cmt.Check, addr *HTTPGelfAddress, group string, node string) error {
 	var buf bytes.Buffer
 	payload := map[string]interface{}{
 		"version":       "1.1",
 		"host":          fmt.Sprintf("%s_%s", group, node),
-		"short_message": fmt.Sprintf("cmt_check %s", cr.Name()),
-		"cmt_check":     cr.Name(),
+		"short_message": fmt.Sprintf("cmt_check %s", c.Name()),
+		"cmt_check":     c.Name(),
 		"cmt_node":      node,
 		"cmt_group":     group,
 	}
 
-	for _, ci := range cr.CheckItems() {
+	for _, ci := range c.CheckItems() {
 		payload[fmt.Sprintf("cmt_%s", ci.Name)] = ci.Value
 	}
 
-	is_alert, _ := cr.GetAlert()
+	is_alert, _ := c.GetAlert()
 	if is_alert {
 		payload["cmt_alert"] = "yes"
 	} else {
@@ -120,11 +120,11 @@ func sendCheckResultHTTPGelf(cr *cmt.CheckResult, addr *HTTPGelfAddress, group s
 	return nil
 }
 
-func sendCheckResultUDPGelf(cr *cmt.CheckResult, addr *UDPGelfAddress, group string, node string) error {
+func sendCheckResultUDPGelf(c *cmt.Check, addr *UDPGelfAddress, group string, node string) error {
 	return nil
 }
 
-func sendCheckResultTeamsChannel(cr *cmt.CheckResult, addr *TeamsAddress, group string, node string) error {
+func sendCheckResultTeamsChannel(c *cmt.Check, addr *TeamsAddress, group string, node string) error {
 	return nil
 }
 
@@ -135,7 +135,7 @@ func writeReportHeaderToStdout(fs *FrameworkSettings) {
 	fmt.Println()
 }
 
-func writeReportToStdout(checkresult *cmt.CheckResult) {
+func writeReportToStdout(checkresult *cmt.Check) {
 	printCentered(checkresult.Name(), STDOUT_REPORT_WIDTH, '-')
 	if checkresult.ArgumentSet() != nil {
 		fmt.Printf("argument set: %v\n", checkresult.ArgumentSet())

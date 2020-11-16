@@ -10,19 +10,19 @@ import (
 )
 
 func CPU(
-	cr *cmt.CheckResult,
+	c *cmt.Check,
 	args map[string]interface{},
 ) {
 
 	cpuPercent, err := cpu.Percent(2*time.Second, false)
 	if err != nil {
-		cr.AddError(errors.Wrap(err, "cpu.Percent"))
+		c.AddError(errors.Wrap(err, "cpu.Percent"))
 		return
 	}
 
-	fmt.Fprintf(cr.DebugBuffer(), "some debugging thing")
+	fmt.Fprintf(c.DebugBuffer(), "some debugging thing")
 
-	cr.AddItem(&cmt.CheckItem{
+	c.AddItem(&cmt.CheckItem{
 		Name:        "cmt_cpu",
 		Value:       cpuPercent[0],
 		Description: "CPU Percentage",

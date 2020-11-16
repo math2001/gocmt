@@ -7,7 +7,7 @@ import (
 )
 
 type checkerfunction func(
-	cr *cmt.CheckResult,
+	c *cmt.Check,
 	args map[string]interface{},
 )
 
