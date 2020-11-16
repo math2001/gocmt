@@ -16,6 +16,7 @@ checks:
   - network_counters
   - memory
   - process
+  - swap
 
 disks:
   - path: /
