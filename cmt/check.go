@@ -52,18 +52,6 @@ func (c *Check) DebugBuffer() *bytes.Buffer {
 	return &c.debugbuf
 }
 
-func (c *Check) SetAlert(msg string) {
-	if c.isAlert {
-		log.Printf("[checkresult] warning: alert already set to %q (overwrote by %q)", c.alertMessage, msg)
-	}
-	c.isAlert = true
-	c.alertMessage = msg
-}
-
-func (c *Check) GetAlert() (is_alert bool, message string) {
-	return c.isAlert, c.alertMessage
-}
-
 func (c *Check) SetPanic(message interface{}, stack []byte) {
 	if c.panicData != nil {
 		log.Printf("[checkresult] warning: panic already set %q (overwrote by %q)", c.panicData.msg, message)
@@ -94,6 +82,9 @@ type CheckItem struct {
 	Value       interface{}
 	Description string
 	Unit        string
+
+	IsAlert      bool
+	AlertMessage string
 }
 
 type panicData struct {

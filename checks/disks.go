@@ -39,14 +39,15 @@ func Disks(
 		Description: "Free (bytes)",
 	})
 
-	c.AddItem(&cmt.CheckItem{
+	ci := &cmt.CheckItem{
 		Name:        "disk_percent",
 		Value:       disk.UsedPercent,
 		Unit:        "%",
 		Description: "Used (percent)",
-	})
+	}
 
 	if disk.UsedPercent > float64(alertThreshold) {
-		c.SetAlert(fmt.Sprintf("check disk for %s - critical capacity alert (%.2f%%)", path, disk.UsedPercent))
+		ci.IsAlert = true
+		ci.AlertMessage = fmt.Sprintf("check disk for %s - critical capacity alert (%.2f%%)", path, disk.UsedPercent)
 	}
 }
