@@ -47,3 +47,12 @@ urls:
     url: https://localhost:8080
     ssl_verify: false
     pattern: broken
+
+folders:
+  - path: /var/log
+    recursive: true
+    target:
+      age_min: 60
+      files_min: 3
+      has_files:
+        - syslog
