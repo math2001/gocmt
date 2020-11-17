@@ -19,7 +19,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const STDOUT_REPORT_WIDTH = 48
+const stdoutReportWidth = 48
 
 var httpclient = &http.Client{
 	Timeout: 100 * time.Second, // default timeout is 0, meaning no timeout, which is bad
@@ -138,14 +138,14 @@ func sendCheckResultTeamsChannel(c *cmt.CheckResult, addr *TeamsAddress, group s
 }
 
 func writeReportHeaderToStdout(fs *FrameworkSettings) {
-	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
-	printCentered(fmt.Sprintf("%s:%s (ran %d checks)", fs.CmtGroup, fs.CmtNode, len(fs.Checks)), STDOUT_REPORT_WIDTH-1, ' ')
-	fmt.Println(strings.Repeat("=", STDOUT_REPORT_WIDTH))
+	fmt.Println(strings.Repeat("=", stdoutReportWidth))
+	printCentered(fmt.Sprintf("%s:%s (ran %d checks)", fs.CmtGroup, fs.CmtNode, len(fs.Checks)), stdoutReportWidth-1, ' ')
+	fmt.Println(strings.Repeat("=", stdoutReportWidth))
 	fmt.Println()
 }
 
 func writeReportToStdout(checkresult *cmt.CheckResult) {
-	printCentered(checkresult.Name(), STDOUT_REPORT_WIDTH, '-')
+	printCentered(checkresult.Name(), stdoutReportWidth, '-')
 	if checkresult.ArgumentSet() != nil {
 		fmt.Printf("argument set: %v\n", checkresult.ArgumentSet())
 	}

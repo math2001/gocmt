@@ -16,7 +16,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/math2001/gocmt/cmt"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v2"
 )
@@ -41,8 +40,6 @@ type FrameworkSettings struct {
 	TeamsRateLimit int             `mapstructure:"teams_rate_limit"`
 
 	DatabaseFile string `mapstructure:"database_file"`
-
-	Flags cmt.Flags
 }
 
 type UDPGelfAddress struct {

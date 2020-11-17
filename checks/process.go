@@ -69,3 +69,30 @@ func Process(c *cmt.CheckResult, args map[string]interface{}) {
 	})
 
 }
+
+func AvailProcess() {
+	pids, err := process.Pids()
+	if err != nil {
+		panic(err)
+	}
+	for _, pid := range pids {
+		p, err := process.NewProcess(pid)
+		if err != nil {
+			panic(err)
+		}
+		name, err := p.Name()
+		if err != nil {
+			panic(err)
+		}
+		mempc, err := p.MemoryPercent()
+		if err != nil {
+			panic(err)
+		}
+		cpupc, err := p.CPUPercent()
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("%-30s(%6d): mem %.1f%% cpu %.1f%%\n", name, p.Pid, mempc, cpupc)
+	}
+}

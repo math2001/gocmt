@@ -16,7 +16,7 @@ import (
 )
 
 // check name: check function
-var allchecks = map[string]checkerfunction{
+var allchecks = map[string]checkerFunction{
 	"cpu":              checks.CPU,
 	"boottime":         checks.Boottime,
 	"load":             checks.Load,
@@ -57,7 +57,7 @@ func runChecks(conf Config) <-chan *cmt.CheckResult {
 			db[name] = make(map[string]interface{})
 		}
 
-		value, ok := conf.ChecksArguments[name]
+		value, ok := conf.ArgumentSets[name]
 		if ok {
 			sets, ok := value.([]interface{})
 			if !ok {
@@ -103,7 +103,7 @@ func isCheckEnabled(fs *FrameworkSettings, name string) bool {
 func runCheck(
 	wg *sync.WaitGroup,
 	name string,
-	fn checkerfunction,
+	fn checkerFunction,
 	checkresults chan<- *cmt.CheckResult,
 	argset map[string]interface{},
 	db map[string]interface{},
