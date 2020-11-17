@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/math2001/gocmt/cmt"
 )
@@ -28,6 +30,11 @@ func main() {
 	}
 
 	conf := loadConf()
+	go func() {
+		time.Sleep(50 * time.Second)
+		fmt.Print("execution took too long, exiting")
+		os.Exit(1)
+	}()
 
 	checkResults := runChecks(conf)
 	sendReport(conf.FrameworkSettings, checkResults)
