@@ -22,9 +22,12 @@ func main() {
 	available := flag.Bool(
 		"available", false,
 		"display available entries found for each checks (manual run on target)")
+
 	listchecks := flag.Bool(
 		"listchecks", false,
 		"display available checks")
+
+	sequential := flag.Bool("sequential", false, "run the test sequentially")
 
 	flag.Parse()
 
@@ -68,7 +71,8 @@ func main() {
 		os.Exit(1)
 	}()
 
-	checkResults := runChecks(conf)
+	checkResults := make(chan *cmt.CheckResult)
+	go runChecks(checkResults, conf, *sequential)
 	sendReport(conf.FrameworkSettings, checkResults)
 
 	fmt.Println("CMT done")

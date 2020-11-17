@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"runtime/debug"
+	"sort"
 	"sync"
 
 	"github.com/math2001/gocmt/checks"
@@ -34,17 +35,27 @@ var allchecks = map[string]checkerFunction{
 // This function returns before all the tests have finished running. It returns
 // a channel on which the check results are send. The channel is closed as soon
 // as all the tests have finished running.
-func runChecks(conf Config) <-chan *cmt.CheckResult {
-
-	db := loadDatabaseFromFile(conf.FrameworkSettings.DatabaseFile)
+func runChecks(checkresults chan<- *cmt.CheckResult, conf Config, sequential bool) {
 
 	var wg sync.WaitGroup
 
-	checkresults := make(chan *cmt.CheckResult)
+	db := loadDatabaseFromFile(conf.FrameworkSettings.DatabaseFile)
+
+	// always start the tests in the same order (map aren't sorted in Go)
+	// consistency can only be good. And it's pretty cheap here
+	names := make([]string, len(allchecks))
+	i := 0
+	for name := range allchecks {
+		names[i] = name
+		i++
+	}
+	sort.Slice(names, func(i, j int) bool {
+		return names[i] < names[j]
+	})
 
 	// producer (produces check results)
-
-	for name, fn := range allchecks {
+	for _, name := range names {
+		fn := allchecks[name]
 		if name == "_globals" {
 			panic("'_globals' is a reserved name (found check named _globals)")
 		}
@@ -70,12 +81,20 @@ func runChecks(conf Config) <-chan *cmt.CheckResult {
 				if err := mapstructure.Decode(set, &argSet); err != nil {
 					panic(errors.Wrapf(err, "decoding %#v into map[string]interface{}. You probably mess up check_arguments for %s", set, name))
 				}
-				go runCheck(&wg, name, fn, checkresults, argSet, db[name])
+				if sequential {
+					runCheck(&wg, name, fn, checkresults, argSet, db[name])
+				} else {
+					go runCheck(&wg, name, fn, checkresults, argSet, db[name])
+				}
 			}
 
 		} else {
 			wg.Add(1)
-			go runCheck(&wg, name, fn, checkresults, nil, db[name])
+			if sequential {
+				runCheck(&wg, name, fn, checkresults, nil, db[name])
+			} else {
+				go runCheck(&wg, name, fn, checkresults, nil, db[name])
+			}
 		}
 
 	}
@@ -86,8 +105,6 @@ func runChecks(conf Config) <-chan *cmt.CheckResult {
 		close(checkresults)
 
 	}(db, conf.FrameworkSettings.DatabaseFile)
-
-	return checkresults
 }
 
 func isCheckEnabled(fs *FrameworkSettings, name string) bool {
