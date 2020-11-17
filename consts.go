@@ -17,6 +17,8 @@ type FrameworkSettings struct {
 	TeamsRateLimit int             `mapstructure:"teams_rate_limit"`
 
 	DatabaseFile string `mapstructure:"database_file"`
+
+	Available bool `mapstructure:""` // only set-able from by the command line
 }
 
 type UDPGelfAddress struct {
