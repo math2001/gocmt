@@ -19,6 +19,7 @@ checks:
   - swap
   - mounts
   - pings
+  - urls
 
 disks:
   - path: /
@@ -34,5 +35,15 @@ mounts:
   - mountpoint: /home
 
 pings:
-  - hostname: localhost
+  - hostname: http://localhost
   - hostname: invalid
+
+urls:
+  - name: linux
+    url: http://www.kernel.org
+    allow_redirects: true
+    pattern: Linux
+  - name: localhost
+    url: https://localhost:8080
+    ssl_verify: false
+    pattern: broken
