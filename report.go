@@ -192,6 +192,11 @@ func writeReportToStdout(checkresult *cmt.Check) {
 		fmt.Println(string(stack))
 	}
 
+	for _, ci := range checkresult.CheckItems() {
+		if ci.IsAlert {
+			fmt.Printf("[ALERT]: %s\n", ci.AlertMessage)
+		}
+	}
 }
 
 func printCentered(text string, width int, paddingChar rune) {
