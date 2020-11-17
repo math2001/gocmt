@@ -11,7 +11,7 @@ import (
 	"github.com/math2001/gocmt/cmt"
 )
 
-func URLs(c *cmt.Check, args map[string]interface{}) {
+func URLs(c *cmt.CheckResult, args map[string]interface{}) {
 	name := args["name"].(string)
 	url := args["url"].(string)
 	pattern := args["pattern"].(string)

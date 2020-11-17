@@ -10,7 +10,7 @@ import (
 )
 
 func CPU(
-	c *cmt.Check,
+	c *cmt.CheckResult,
 	args map[string]interface{},
 ) {
 

@@ -5,7 +5,7 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
-func Swap(c *cmt.Check, args map[string]interface{}) {
+func Swap(c *cmt.CheckResult, args map[string]interface{}) {
 	swapMem, err := mem.SwapMemory()
 	if err != nil {
 		panic(err)

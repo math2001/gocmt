@@ -9,7 +9,7 @@ import (
 )
 
 func Boottime(
-	c *cmt.Check,
+	c *cmt.CheckResult,
 	args map[string]interface{},
 ) {
 	boottime, err := host.BootTime()

@@ -6,7 +6,7 @@ import (
 )
 
 func NetworkCounters(
-	c *cmt.Check,
+	c *cmt.CheckResult,
 	_ map[string]interface{},
 ) {
 	interfacesStat, err := net.IOCounters(false)

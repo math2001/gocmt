@@ -5,7 +5,7 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
-func Memory(c *cmt.Check, args map[string]interface{}) {
+func Memory(c *cmt.CheckResult, args map[string]interface{}) {
 	virtMem, err := mem.VirtualMemory()
 	if err != nil {
 		panic(err)

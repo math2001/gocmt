@@ -7,7 +7,7 @@ import (
 	"github.com/shirou/gopsutil/process"
 )
 
-func Process(c *cmt.Check, args map[string]interface{}) {
+func Process(c *cmt.CheckResult, args map[string]interface{}) {
 	name := args["name"].(string)
 	psname := args["psname"].(string)
 

@@ -6,7 +6,7 @@ import (
 )
 
 func Load(
-	c *cmt.Check,
+	c *cmt.CheckResult,
 	args map[string]interface{},
 ) {
 	loadavg, err := load.Avg()

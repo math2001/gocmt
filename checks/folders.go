@@ -10,7 +10,7 @@ import (
 )
 
 func Folders(
-	c *cmt.Check,
+	c *cmt.CheckResult,
 	args map[string]interface{},
 ) {
 	path := args["path"].(string)

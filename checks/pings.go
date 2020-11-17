@@ -7,7 +7,7 @@ import (
 	"github.com/math2001/gocmt/cmt"
 )
 
-func Pings(c *cmt.Check, args map[string]interface{}) {
+func Pings(c *cmt.CheckResult, args map[string]interface{}) {
 	hostname := args["hostname"].(string)
 	c.AddItem(&cmt.CheckItem{
 		Name:  "ping",

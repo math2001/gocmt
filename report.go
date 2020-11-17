@@ -28,7 +28,7 @@ var httpclient = &http.Client{
 // consumes the reports from the check results channel (the check result are
 // send on this channel as soon as they are finished, and the channel is closed
 // once all the checks have finished)
-func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.Check) {
+func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.CheckResult) {
 	writeReportHeaderToStdout(fs)
 
 	var g errgroup.Group
@@ -46,7 +46,7 @@ func sendReport(fs *FrameworkSettings, checkResults <-chan *cmt.Check) {
 	}
 }
 
-func sendCheckResult(fs *FrameworkSettings, c *cmt.Check) error {
+func sendCheckResult(fs *FrameworkSettings, c *cmt.CheckResult) error {
 
 	// don't send update if there are no check items
 	if len(c.CheckItems()) == 0 {
@@ -79,7 +79,7 @@ func sendCheckResult(fs *FrameworkSettings, c *cmt.Check) error {
 	return errors.Wrapf(g.Wait(), "reporting check result %q", c.Name())
 }
 
-func sendCheckResultHTTPGelf(c *cmt.Check, addr *HTTPGelfAddress, group string, node string) error {
+func sendCheckResultHTTPGelf(c *cmt.CheckResult, addr *HTTPGelfAddress, group string, node string) error {
 	var buf bytes.Buffer
 	payload := map[string]interface{}{
 		"version":       "1.1",
@@ -129,11 +129,11 @@ func sendCheckResultHTTPGelf(c *cmt.Check, addr *HTTPGelfAddress, group string, 
 	return nil
 }
 
-func sendCheckResultUDPGelf(c *cmt.Check, addr *UDPGelfAddress, group string, node string) error {
+func sendCheckResultUDPGelf(c *cmt.CheckResult, addr *UDPGelfAddress, group string, node string) error {
 	return nil
 }
 
-func sendCheckResultTeamsChannel(c *cmt.Check, addr *TeamsAddress, group string, node string) error {
+func sendCheckResultTeamsChannel(c *cmt.CheckResult, addr *TeamsAddress, group string, node string) error {
 	return nil
 }
 
@@ -144,7 +144,7 @@ func writeReportHeaderToStdout(fs *FrameworkSettings) {
 	fmt.Println()
 }
 
-func writeReportToStdout(checkresult *cmt.Check) {
+func writeReportToStdout(checkresult *cmt.CheckResult) {
 	printCentered(checkresult.Name(), STDOUT_REPORT_WIDTH, '-')
 	if checkresult.ArgumentSet() != nil {
 		fmt.Printf("argument set: %v\n", checkresult.ArgumentSet())

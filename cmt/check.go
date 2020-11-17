@@ -5,10 +5,10 @@ import (
 	"log"
 )
 
-// Check is basically a getter setter class. I don't think it's the
+// CheckResult is basically a getter setter class. I don't think it's the
 // typical go way, but it makes writing checks easier to read (AddError and
 // AddItem), and that's what matters here.
-type Check struct {
+type CheckResult struct {
 	name   string
 	argset map[string]interface{}
 
@@ -24,35 +24,35 @@ type Check struct {
 	panicData *panicData
 }
 
-func (c *Check) AddError(err error) {
+func (c *CheckResult) AddError(err error) {
 	c.errors = append(c.errors, err)
 }
 
-func (c *Check) AddItem(ci *CheckItem) {
+func (c *CheckResult) AddItem(ci *CheckItem) {
 	c.checkitems = append(c.checkitems, ci)
 }
 
-func (c *Check) Errors() []error {
+func (c *CheckResult) Errors() []error {
 	return c.errors
 }
 
-func (c *Check) CheckItems() []*CheckItem {
+func (c *CheckResult) CheckItems() []*CheckItem {
 	return c.checkitems
 }
 
-func (c *Check) Name() string {
+func (c *CheckResult) Name() string {
 	return c.name
 }
 
-func (c *Check) ArgumentSet() map[string]interface{} {
+func (c *CheckResult) ArgumentSet() map[string]interface{} {
 	return c.argset
 }
 
-func (c *Check) DebugBuffer() *bytes.Buffer {
+func (c *CheckResult) DebugBuffer() *bytes.Buffer {
 	return &c.debugbuf
 }
 
-func (c *Check) SetPanic(message interface{}, stack []byte) {
+func (c *CheckResult) SetPanic(message interface{}, stack []byte) {
 	if c.panicData != nil {
 		log.Printf("[checkresult] warning: panic already set %q (overwrote by %q)", c.panicData.msg, message)
 	}
@@ -62,15 +62,15 @@ func (c *Check) SetPanic(message interface{}, stack []byte) {
 	}
 }
 
-func (c *Check) GetPanic() (r interface{}, stack []byte) {
+func (c *CheckResult) GetPanic() (r interface{}, stack []byte) {
 	if c.panicData == nil {
 		return nil, nil
 	}
 	return c.panicData.msg, c.panicData.stack
 }
 
-func NewCheck(name string, argset map[string]interface{}, db map[string]interface{}) *Check {
-	return &Check{
+func NewCheckResult(name string, argset map[string]interface{}, db map[string]interface{}) *CheckResult {
+	return &CheckResult{
 		name:   name,
 		argset: argset,
 		DB:     db,

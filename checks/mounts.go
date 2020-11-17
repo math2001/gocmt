@@ -7,7 +7,7 @@ import (
 	"github.com/shirou/gopsutil/disk"
 )
 
-func Mounts(c *cmt.Check, args map[string]interface{}) {
+func Mounts(c *cmt.CheckResult, args map[string]interface{}) {
 	mountpoint := args["mountpoint"].(string)
 	c.AddItem(&cmt.CheckItem{
 		Name:  "mount",
