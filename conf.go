@@ -16,17 +16,55 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/math2001/gocmt/cmt"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v2"
 )
 
-const confd_path = "./conf.d"
-const local_conf_path = "./conf.yml"
+const confdPath = "./conf.d"
+const localConfPath = "./conf.yml"
+
+type Config struct {
+	FrameworkSettings *FrameworkSettings     `mapstructure:"framework_settings"`
+	ArgumentSets      map[string]interface{} `mapstructure:"checks_arguments"`
+}
+
+type FrameworkSettings struct {
+	CmtNode  string `mapstructure:"cmt_node"`
+	CmtGroup string `mapstructure:"cmt_group"`
+
+	Checks                 []string
+	GraylogUDPGelfServers  []*UDPGelfAddress  `mapstructure:"graylog_udp_gelf_servers"`
+	GraylogHTTPGelfServers []*HTTPGelfAddress `mapstructure:"graylog_http_gelf_servers"`
+
+	TeamsChannel   []*TeamsAddress `mapstructure:"teams_channel"`
+	TeamsRateLimit int             `mapstructure:"teams_rate_limit"`
+
+	DatabaseFile string `mapstructure:"database_file"`
+
+	Flags cmt.Flags
+}
+
+type UDPGelfAddress struct {
+	Name string
+	Host string
+	Port int
+}
+
+type HTTPGelfAddress struct {
+	Name string
+	URL  string
+}
+
+type TeamsAddress struct {
+	Name string
+	URL  string
+}
 
 func loadConf() Config {
 	base := make(map[string]interface{})
 	loadConfInPlaceFromConfd(base)
-	loadConfInPlaceFromFile(local_conf_path, base)
+	loadConfInPlaceFromFile(localConfPath, base)
 	loadConfInPlaceFromRemote(base)
 	loadConfFromArguments(os.Args[1:])
 
@@ -71,7 +109,7 @@ func loadConf() Config {
 }
 
 func loadConfInPlaceFromConfd(base map[string]interface{}) {
-	files, err := ioutil.ReadDir(confd_path)
+	files, err := ioutil.ReadDir(confdPath)
 	if err != nil {
 		log.Printf("[conf] couldn't list directory conf.d, ignoring: %s", err)
 	}
@@ -83,7 +121,7 @@ func loadConfInPlaceFromConfd(base map[string]interface{}) {
 	})
 
 	for _, file := range files {
-		loadConfInPlaceFromFile(filepath.Join(confd_path, file.Name()), base)
+		loadConfInPlaceFromFile(filepath.Join(confdPath, file.Name()), base)
 	}
 }
 
