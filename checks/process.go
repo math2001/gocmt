@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/math2001/gocmt/cmt"
+	"github.com/math2001/gocmt/columnprint"
 	"github.com/shirou/gopsutil/process"
 )
 
@@ -75,6 +76,10 @@ func AvailProcess() {
 	if err != nil {
 		panic(err)
 	}
+	var u columnprint.U
+	u.Record(len(pids))
+	u.SetColumns("%s(%d):", "%.1f%%", "%.1f%%")
+	u.WouldPrintLiteral("psname(pid)", "mem", "cpu")
 	for _, pid := range pids {
 		p, err := process.NewProcess(pid)
 		if err != nil {
@@ -93,6 +98,8 @@ func AvailProcess() {
 			panic(err)
 		}
 
-		fmt.Printf("%-30s(%6d): mem %.1f%% cpu %.1f%%\n", name, p.Pid, mempc, cpupc)
+		// fmt.Printf("%s(%d): mem %.1f%% cpu %.1f%%\n", name, p.Pid, mempc, cpupc)
+		u.WouldPrint(name, p.Pid, mempc, cpupc)
 	}
+	u.PrintFromRecord()
 }

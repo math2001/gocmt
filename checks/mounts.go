@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/math2001/gocmt/cmt"
+	"github.com/math2001/gocmt/columnprint"
 	"github.com/shirou/gopsutil/disk"
 )
 
@@ -42,7 +43,15 @@ func AvailMounts() {
 	if err != nil {
 		panic(err)
 	}
+
+	var u columnprint.U
+	u.SetColumns("%s", "%s", "%s", "%s")
+	u.WouldPrintLiteral("process", "device", "fstype", "opts")
 	for _, p := range partitions {
-		fmt.Printf("%-30s device %-20q  fstype %-10q  opts %q\n", p.Mountpoint, p.Device, p.Fstype, p.Opts)
+		u.WouldPrint(p.Mountpoint, p.Device, p.Fstype, p.Opts)
+	}
+	u.PrintLiteral("process", "device", "fstype", "opts")
+	for _, p := range partitions {
+		u.Print(p.Mountpoint, p.Device, p.Fstype, p.Opts)
 	}
 }

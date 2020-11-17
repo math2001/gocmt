@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/math2001/gocmt/cmt"
+	"github.com/math2001/gocmt/columnprint"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 )
@@ -149,9 +150,15 @@ func writeReportToStdout(checkresult *cmt.CheckResult) {
 	if checkresult.ArgumentSet() != nil {
 		fmt.Printf("argument set: %v\n", checkresult.ArgumentSet())
 	}
+	fmt.Println()
 
-	for _, checkitem := range checkresult.CheckItems() {
-		fmt.Printf("%-20s %v %s -> %s\n", checkitem.Name, checkitem.Value, checkitem.Unit, checkitem.Description)
+	var u columnprint.U
+	u.SetColumns("%s", "%v %s", "-> %s")
+	for _, ci := range checkresult.CheckItems() {
+		u.WouldPrint(ci.Name, ci.Value, ci.Unit, ci.Description)
+	}
+	for _, ci := range checkresult.CheckItems() {
+		u.Print(ci.Name, ci.Value, ci.Unit, ci.Description)
 	}
 	fmt.Println()
 
