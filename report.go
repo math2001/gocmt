@@ -153,13 +153,16 @@ func writeReportToStdout(checkresult *cmt.CheckResult) {
 	fmt.Println()
 
 	var u columnprint.U
-	u.SetColumns("%s", "%v %s", "-> %s")
+	u.SetColumns("%s", "%v %s", "%s%s")
+	u.Record(len(checkresult.CheckItems()))
 	for _, ci := range checkresult.CheckItems() {
-		u.WouldPrint(ci.Name, ci.Value, ci.Unit, ci.Description)
+		arrow := "-> "
+		if ci.Description == "" {
+			arrow = ""
+		}
+		u.WouldPrint(ci.Name, ci.Value, ci.Unit, arrow, ci.Description)
 	}
-	for _, ci := range checkresult.CheckItems() {
-		u.Print(ci.Name, ci.Value, ci.Unit, ci.Description)
-	}
+	u.PrintFromRecord()
 	fmt.Println()
 
 	if len(checkresult.Errors()) > 0 {
